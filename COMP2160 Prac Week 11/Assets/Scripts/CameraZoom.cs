@@ -8,6 +8,8 @@ public class CameraZoom : MonoBehaviour
     private Actions actions;
     private InputAction scrollAction;
 
+    [SerializeField] private float zoomSpeed = 1;
+
     void Awake()
     {
         actions = new Actions();
@@ -31,6 +33,14 @@ public class CameraZoom : MonoBehaviour
 
     void Update()
     {
-        Debug.Log(scrollAction.ReadValue<float>());
+        Camera cam = Camera.main;
+        if(cam.orthographic)
+        {
+            cam.orthographicSize -= scrollAction.ReadValue<float>()/1200 * zoomSpeed;
+        }
+        else
+        {
+            cam.fieldOfView -= scrollAction.ReadValue<float>()/120 * zoomSpeed;
+        }
     }
 }

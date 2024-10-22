@@ -6,6 +6,7 @@ public class FollowerScript : MonoBehaviour
 {
     [SerializeField] private Transform followerLoc;
     [SerializeField] private Transform marbleLoc;
+    [SerializeField] private GameObject UI;
 
     // Start is called before the first frame update
     void Start()

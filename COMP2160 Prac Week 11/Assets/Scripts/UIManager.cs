@@ -40,6 +40,11 @@ public class UIManager : MonoBehaviour
     public event TargetSelectedEventHandler TargetSelected;
 #endregion
 
+#region Other
+    private Vector3 mouseLoc;
+    public Vector3 CrosshairPos;
+#endregion
+
 #region Init & Destroy
     void Awake()
     {
@@ -64,6 +69,11 @@ public class UIManager : MonoBehaviour
         actions.mouse.Enable();
     }
 
+    void Start()
+    {
+        mouseLoc = new Vector3(mouseAction.ReadValue<Vector2>().x,mouseAction.ReadValue<Vector2>().y, 0);
+    }
+
     void OnDisable()
     {
         actions.mouse.Disable();
@@ -81,17 +91,31 @@ public class UIManager : MonoBehaviour
     {
         Camera cam = Camera.main;
         Vector3 mousePos = new Vector3(mouseAction.ReadValue<Vector2>().x,mouseAction.ReadValue<Vector2>().y, 0);
-        //Debug.Log(mousePos);
+        //mousePos += new Vector3(deltaAction.ReadValue<Vector2>().x,deltaAction.ReadValue<Vector2>().y, 0);
         Ray ray = cam.ScreenPointToRay(mousePos);
         RaycastHit hit;
         int layerMask = 1 << 8;
         if(Physics.Raycast(ray.origin, ray.direction, out hit, Mathf.Infinity, layerMask))
         {
-            crosshair.position = hit.point;
+            Vector3 crossLoc = hit.point + Vector3.up * 0.01f;      //to avoid clipping on the Y-Axis with the ground
+            crosshair.position = crossLoc;
         }
+    }
 
-        // FIXME: Move the crosshair position to the mouse position (in world coordinates)
-        // crosshair.position = ...;
+    private void MoveCrosshairDelta()
+    {
+        Camera cam = Camera.main;
+        mouseLoc += new Vector3(deltaAction.ReadValue<Vector2>().x,deltaAction.ReadValue<Vector2>().y, 0);
+        Debug.Log(mouseLoc);
+        Ray ray = cam.ScreenPointToRay(mouseLoc);
+        RaycastHit hit;
+        int layerMask = 1 << 8;
+        if(Physics.Raycast(ray.origin, ray.direction, out hit, Mathf.Infinity, layerMask))
+        {
+            Vector3 crossLoc = hit.point + Vector3.up * 0.01f;      //to avoid clipping on the Y-Axis with the ground
+            crosshair.position = crossLoc;
+            CrosshairPos = crossLoc;
+        }
     }
 
     private void SelectTarget()
